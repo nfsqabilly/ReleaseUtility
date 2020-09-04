@@ -1,0 +1,17 @@
+{
+  "name": "ReleaseUtility",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "build": "nexe index.js && .\\upx.exe --brute .\\ReleaseUtility.exe"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "inquirer": "^7.3.3",
+    "simple-git": "^2.20.1"
+  }
+}
