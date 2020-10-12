@@ -5,13 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dev": "nexe index.js",
     "build": "nexe index.js && .\\upx.exe --brute .\\ReleaseUtility.exe"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "fibers": "^5.0.0",
     "inquirer": "^7.3.3",
-    "simple-git": "^2.20.1"
+    "simple-git": "^2.20.1",
+    "streamline-zip": "^4.0.0"
   }
 }
