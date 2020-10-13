@@ -12,9 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fibers": "^5.0.0",
+    "archiver": "^5.0.2",
     "inquirer": "^7.3.3",
-    "simple-git": "^2.20.1",
-    "streamline-zip": "^4.0.0"
+    "simple-git": "^2.20.1"
   }
 }

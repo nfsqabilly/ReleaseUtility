@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const simpleGit = require('simple-git');
 // const { execSync } = require('child_process');
 const fs = require('fs');
-const zip = require('streamline-zip');
+const archiver = require('archiver');
 const PATH = require('path');
 
 const git = simpleGit('./', {
@@ -110,8 +110,22 @@ const init = async () => {
   try {
     // execute the shell command
     // execSync(cmd);
-    const wstream = fs.createWriteStream(`${answers.outputName}.zip`);
-    const archive = new zip.Zip(wstream);
+
+    const output = fs.createWriteStream(`${__dirname}/${answers.outputName}.zip`);
+    const archive = archiver('zip', {
+      zlib: { level: 9 },
+    });
+
+    output.on('close', () => {
+      console.log(`[+] ${archive.pointer()} total bytes`);
+      console.log(`[+] Zip successfully created.`);
+    });
+
+    archive.on('error', (err) => {
+      throw err;
+    });
+
+    archive.pipe(output);
 
     // get the difference between to the branches
     /**
@@ -120,29 +134,21 @@ const init = async () => {
      */
     const diff = await git.diff(options);
     const fileChanges = diff.split('\n');
-    const filesToAdd = [];
-    fileChanges.forEach(change => {
-      const regex = /((\w|\w?[0-9]{1,3})\s{4,7})/
-      const match = change.match(regex);
-      console.log(match);
-      const action = match[2];
-      const file = change.replace(match[1], '');
-      const path = action.startsWith('R') ? file.split('   ')[0] : file;
-      const name = PATH.basename(path);
 
-      const fileToAdd = {
-        name: name,
-        path: path
-      };
-      filesToAdd.push(fileToAdd);
+    fileChanges.forEach((change) => {
+      if (change === '') {
+        return;
+      }
+      
+      const match = change.split('\t');
+      const action = match[0];
+      const file = match[1];
+      const path = action.startsWith('R') ? file.split('\t')[0] : file;
+      console.log(`Archiving: ${path}`);
+      archive.file(path, { name: path });
     });
 
-    archive.add(_, filesToAdd)
-
-    archive.finish(_);
-    wstream.end();
-
-    console.log(`[+] Zip successfully created.`);
+    archive.finalize();
   } catch (error) {
     console.error(`[-] Oops. Something went wrong: ${error}`);
   }
